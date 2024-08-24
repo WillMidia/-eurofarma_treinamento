@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import 'home_screen.dart';
 
@@ -84,7 +83,7 @@ class EmployeeLoginScreen extends StatelessWidget {
                                     ),
                                     child: Text(
                                       'ENTRAR',
-                                      style: TextStyle(fontSize: 16),
+                                      style: TextStyle(fontSize: 16, color: Colors.white), // Cor do texto
                                     ),
                                   ),
                                 ),
@@ -104,7 +103,7 @@ class EmployeeLoginScreen extends StatelessWidget {
                                     ),
                                     child: Text(
                                       'REGISTRAR',
-                                      style: TextStyle(fontSize: 16),
+                                      style: TextStyle(fontSize: 16, color: Colors.white), // Cor do texto
                                     ),
                                   ),
                                 ),

@@ -1,74 +1,51 @@
 import 'package:flutter/material.dart';
-import 'profile_screen.dart';
-import 'training_screen.dart';
+import '../widgets/bottom_nav_screen.dart'; // Certifique-se de importar o novo widget
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    switch (index) {
-      case 1:
-        Navigator.pushNamed(context, '/training');
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/profile');
-        break;
-      default:
-      // Mantenha a tela inicial como está
-        break;
-    }
-  }
-
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: Image.asset(
-                'assets/images/eurofarma-logo.png',
-                width: 200,
-                height: 50,
+    return BottomNavScreen(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Logo da Eurofarma
+          SizedBox(height: 25), // Ajuste a altura para mover a logo mais para baixo
+          Align(
+            alignment: Alignment.topCenter,
+            child: Image.asset(
+              'assets/images/eurofarma-logo.png',
+              width: 200,
+              height: 50,
+            ),
+          ),
+          SizedBox(height: 20),
+          // Informações do usuário
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Nome do Usuário', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text('Cargo', style: TextStyle(fontSize: 16)),
+                  Text('Departamento', style: TextStyle(fontSize: 16)),
+                  Text('CPF: 123.456.789-00', style: TextStyle(fontSize: 16)),
+                ],
               ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Nome do Usuário', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    Text('Cargo', style: TextStyle(fontSize: 16)),
-                    Text('Departamento', style: TextStyle(fontSize: 16)),
-                    Text('CPF: 123.456.789-00', style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage('assets/images/profile_picture.png'),
-                ),
-              ],
-            ),
-            SizedBox(height: 30),
-            Align(
-              alignment: Alignment.center,
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: AssetImage('assets/images/profile_picture.png'),
+              ),
+            ],
+          ),
+          SizedBox(height: 1),
+          // Espaço flexível para centralizar o balão de fala com o ícone Android
+          Expanded(
+            child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Balão de fala
                   Container(
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -88,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(height: 10),
+                  // Ícone Android
                   Container(
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -104,27 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            Spacer(),
-            BottomNavigationBar(
-              currentIndex: _selectedIndex,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.school),
-                  label: 'Treinamentos',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: 'Perfil',
-                ),
-              ],
-              onTap: _onItemTapped,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
