@@ -1,16 +1,36 @@
-# projeto_perguntas2
+# Eurofarma Training Management App
 
-A new Flutter project.
+Este projeto é um aplicativo mobile desenvolvido em Flutter para a Eurofarma, com o objetivo de gerenciar treinamentos e supervisionar funcionários. O aplicativo diferencia o acesso entre funcionários padrão e o departamento de RH, proporcionando uma experiência personalizada para cada usuário.
 
-## Getting Started
+## Funcionalidades
 
-This project is a starting point for a Flutter application.
+- **Tela de Seleção de Usuário**: Permite que o usuário escolha entre "Funcionário" e "RH".
+- **Login de Funcionários**: Login para usuários padrão que não fazem parte do RH.
+- **Login RH**: Login para usuários do departamento de RH.
+- **Tela de Treinamentos**: Lista os treinamentos disponíveis para os funcionários e o progresso em cada um.
+- **Registro de Funcionário**: Permite que o RH registre novos funcionários no sistema, atribuindo treinamentos automaticamente.
+- **Tela de Perfil**: Exibe as informações de perfil do usuário, permitindo edição dos dados.
 
-A few resources to get you started if this is your first Flutter project:
+## Tecnologias Utilizadas
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Flutter**: Framework para desenvolvimento de aplicativos multiplataforma.
+- **Dart**: Linguagem de programação utilizada pelo Flutter.
+- **SweetAlert**: Para exibição de alertas personalizados na interface.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Como Executar o Projeto
+
+1. **Clone o repositório**:
+   ```bash
+   git clone https://github.com/seu-usuario/eurofarma-training-app.git
+   cd eurofarma-training-app
+   ```
+
+2. **Instale as dependências**:
+   ```bash
+   flutter pub get
+   ```
+
+3. **Execute o aplicativo**:
+   ```bash
+   flutter run
+   ```
