@@ -1,3 +1,5 @@
+import 'package:eurofarma_treinamento/screens/profile_screen.dart';
+import 'package:eurofarma_treinamento/screens/training_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/employee_login_screen.dart';
 import 'screens/rh_login_screen.dart';
@@ -22,6 +24,8 @@ class MyApp extends StatelessWidget {
         '/employeeLogin': (context) => EmployeeLoginScreen(),
         '/rhLogin': (context) => RHLoginScreen(),
         '/home': (context) => HomeScreen(),
+        '/profile': (context) => ProfileScreen(),
+        '/training': (context) => TrainingScreen(),
       },
     );
   }

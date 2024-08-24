@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'user_selection_screen.dart'; // Certifique-se de que este import está correto
 
 class ProfileScreen extends StatelessWidget {
   @override
@@ -8,30 +9,47 @@ class ProfileScreen extends StatelessWidget {
         title: Text('Perfil'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Nome do Funcionário',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            const Center(
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage('assets/images/profile_picture.png'), // Atualize o caminho se necessário
+              ),
             ),
             SizedBox(height: 20),
             Text(
-              'Cargo: Gerente',
-              style: TextStyle(fontSize: 16),
+              'Nome do Usuário',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
             SizedBox(height: 10),
             Text(
-              'Departamento: Vendas',
+              'email@exemplo.com',
               style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                // Adicione a funcionalidade de edição de perfil aqui
+              },
+              child: Text('Editar Perfil'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Implementar lógica de edição de perfil
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserSelectionScreen(),
+                  ),
+                      (route) => false,
+                );
               },
-              child: Text('Editar Perfil'),
+              child: Text('Sair'),
             ),
           ],
         ),
