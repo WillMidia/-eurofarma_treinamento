@@ -8,6 +8,7 @@ class EmployeeLoginScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          // Imagem de fundo
           Positioned(
             top: MediaQuery.of(context).size.height / 2 - 120, // Ajusta para centralizar verticalmente
             left: MediaQuery.of(context).size.width / 2 - 150, // Ajusta para centralizar horizontalmente
@@ -25,7 +26,8 @@ class EmployeeLoginScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                SizedBox(height: 60), // Adiciona espaço acima do logo
+                // Espaço acima da logo
+                SizedBox(height: 60),
                 Align(
                   alignment: Alignment.topCenter,
                   child: Image.asset(
@@ -34,83 +36,87 @@ class EmployeeLoginScreen extends StatelessWidget {
                     height: 50,
                   ),
                 ),
+                // Espaço entre a logo e o título
+                SizedBox(height: 40),
+                Text(
+                  'Login de Funcionário',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                Icon(
+                  Icons.work,
+                  size: 30,
+                  color: Colors.blue,
+                ),
+                // Espaço para ajustar a posição do formulário
                 Expanded(
-                  child: Center(
+                  child: Align(
+                    alignment: Alignment.center,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CustomTextField(
-                            hintText: 'LOGIN',
-                          ),
-                          SizedBox(height: 20),
-                          CustomTextField(
-                            hintText: 'SENHA',
-                            obscureText: true,
-                          ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                'Esqueci a senha',
-                                style: TextStyle(color: Colors.grey),
+                      child: Container(
+                        width: double.infinity, // Ocupa toda a largura disponível
+                        constraints: BoxConstraints(
+                          maxWidth: 400, // Limita a largura máxima
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomTextField(
+                              hintText: 'LOGIN',
+                            ),
+                            SizedBox(height: 20),
+                            CustomTextField(
+                              hintText: 'SENHA',
+                              obscureText: true,
+                            ),
+                            SizedBox(height: 20), // Ajusta o espaço entre o campo de senha e o botão "Esqueci a senha"
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () {},
+                                child: Text(
+                                  'Esqueci a senha',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 20),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 10),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => HomeScreen(),
+                            SizedBox(height: 20),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(horizontal: 10),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => HomeScreen(),
+                                          ),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue, // Cor de fundo
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(30), // Bordas arredondadas
                                         ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue, // Cor de fundo
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30), // Bordas arredondadas
+                                        padding: EdgeInsets.symmetric(vertical: 15),
                                       ),
-                                      padding: EdgeInsets.symmetric(vertical: 15),
-                                    ),
-                                    child: Text(
-                                      'ENTRAR',
-                                      style: TextStyle(fontSize: 16, color: Colors.white), // Cor do texto
+                                      child: Text(
+                                        'ENTRAR',
+                                        style: TextStyle(fontSize: 16, color: Colors.white), // Cor do texto
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(width: 20),
-                              Expanded(
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 10),
-                                  child: ElevatedButton(
-                                    onPressed: () {},
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.grey, // Cor de fundo
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30), // Bordas arredondadas
-                                      ),
-                                      padding: EdgeInsets.symmetric(vertical: 15),
-                                    ),
-                                    child: Text(
-                                      'REGISTRAR',
-                                      style: TextStyle(fontSize: 16, color: Colors.white), // Cor do texto
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
