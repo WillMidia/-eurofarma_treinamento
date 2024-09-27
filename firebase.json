@@ -1,0 +1,28 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "eurofarma-training",
+          "appId": "1:199401955195:android:26e7fe5edc8e3009c2a7de",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "eurofarma-training",
+          "configurations": {
+            "android": "1:199401955195:android:26e7fe5edc8e3009c2a7de",
+            "web": "1:199401955195:web:7ecb456bbcb06f6ac2a7de"
+          }
+        }
+      }
+    }
+  },
+  "dataconnect": {
+    "source": "dataconnect"
+  },
+  "database": {
+    "rules": "database.rules.json"
+  }
+}

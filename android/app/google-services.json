@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "199401955195",
+    "firebase_url": "https://eurofarma-training-default-rtdb.firebaseio.com",
+    "project_id": "eurofarma-training",
+    "storage_bucket": "eurofarma-training.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199401955195:android:26e7fe5edc8e3009c2a7de",
+        "android_client_info": {
+          "package_name": "com.skillsync.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIZPBpP62866NvDQG3T_NEgcsiOXg_kuw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
