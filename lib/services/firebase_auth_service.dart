@@ -18,24 +18,27 @@ class FirebaseAuthService {
     }
   }
 
-  // Método para enviar um código de verificação por email
-  Future<void> sendVerificationEmail(User user) async {
-    try {
-      await user.sendEmailVerification();
-      print("Email de verificação enviado para ${user.email}");
-    } catch (e) {
-      print("Erro ao enviar email de verificação: $e");
-    }
+  // Método para listar todos os usuários (Usando Firestore)
+  Future<List<User?>> fetchAllUsers() async {
+    // Aqui você vai precisar do Firestore para armazenar os usuários
+    // Você pode usar Cloud Firestore ou um servidor backend para fazer isso
+    return []; // Retorne a lista de usuários aqui
   }
 
-  // Verifica se o email do usuário logado é autorizado
-  bool isAuthorizedUser(User? user) {
-    const authorizedEmail = "usuario@exemplo.com"; // Substitua pelo email autorizado
-    return user?.email == authorizedEmail;
+  // Método para enviar um código de verificação por email
+  Future<void> sendVerificationEmail(User user, String verificationCode) async {
+    // Lógica para enviar o email com o código
+    // Pode usar um serviço de envio de email como SendGrid ou Firebase Functions
+    print("Email de verificação enviado para ${user.email} com o código $verificationCode");
   }
 
   // Método para deslogar
   Future<void> signOut() async {
     await _auth.signOut();
+  }
+
+  // Método para enviar email de redefinição de senha
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
   }
 }

@@ -3,6 +3,8 @@ import '../widgets/custom_text_field.dart';
 import 'home_screen.dart';
 import '../services/firebase_auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class EmployeeLoginScreen extends StatefulWidget {
   @override
@@ -13,9 +15,34 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
   final FirebaseAuthService _authService = FirebaseAuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _codeController = TextEditingController(); // Campo para código de verificação
+  final TextEditingController _codeController = TextEditingController(); // Controller para o código de verificação
   String? errorMessage;
   bool isVerifying = false; // Controla se estamos na fase de verificação
+  String? verificationCode; // Armazenar o código de verificação enviado
+
+  void _sendVerificationEmail(String email, String code) async {
+    final url = 'https://us-central1-eurofarma-training.cloudfunctions.net/sendVerificationEmail';
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'email': email,
+          'code': code,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Email enviado com sucesso!');
+      } else {
+        print('Falha ao enviar email: ${response.body}');
+      }
+    } catch (error) {
+      print('Erro: $error');
+    }
+  }
 
   void _login() async {
     String email = _emailController.text;
@@ -24,25 +51,14 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
     User? user = await _authService.signInWithEmailAndPassword(email, password);
 
     if (user != null) {
-      if (_authService.isAuthorizedUser(user)) {
-        if (!user.emailVerified) {
-          await _authService.sendVerificationEmail(user);
-          setState(() {
-            isVerifying = true; // Muda para a fase de verificação
-          });
-        } else {
-          // Se o usuário já está verificado, navega para a HomeScreen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        }
-      } else {
-        setState(() {
-          errorMessage = 'Acesso negado. Usuário não autorizado.';
-        });
-        _authService.signOut();
-      }
+      // Gerar um código de verificação aleatório
+      verificationCode = (100000 + (999999 - 100000) * (new DateTime.now().millisecondsSinceEpoch % 1000000 / 1000000)).round().toString();
+      _sendVerificationEmail(user.email!, verificationCode!); // Envia o código
+
+      setState(() {
+        isVerifying = true; // Muda para a fase de verificação
+        errorMessage = null; // Limpa a mensagem de erro se o login for bem-sucedido
+      });
     } else {
       setState(() {
         errorMessage = 'Falha no login. Verifique suas credenciais.';
@@ -51,11 +67,9 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
   }
 
   void _verifyCode() {
-    // Aqui você pode implementar a lógica para verificar o código que o usuário inseriu
-    // Exemplo: comparar com um código gerado
     String code = _codeController.text;
-    // Implementar a lógica de verificação aqui (você pode gerar um código aleatório e enviar por email)
-    if (code == "123456") { // Exemplo de código fixo para teste
+
+    if (code == verificationCode) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -63,6 +77,39 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
     } else {
       setState(() {
         errorMessage = 'Código inválido. Tente novamente.';
+      });
+    }
+  }
+
+  // Método para enviar email de redefinição de senha
+  void _sendPasswordResetEmail() async {
+    String email = _emailController.text;
+
+    if (email.isEmpty) {
+      setState(() {
+        errorMessage = 'Por favor, insira seu email.';
+      });
+      return;
+    }
+
+    try {
+      await _authService.sendPasswordResetEmail(email);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Email Enviado'),
+          content: Text('Verifique seu email para redefinir a senha.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } catch (error) {
+      setState(() {
+        errorMessage = 'Erro ao enviar email: ${error.toString()}';
       });
     }
   }
@@ -142,8 +189,9 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
                               ),
                             ],
                             if (isVerifying) ...[
+                              SizedBox(height: 20),
                               CustomTextField(
-                                controller: _codeController, // Campo para o código de verificação
+                                controller: _codeController,
                                 hintText: 'CÓDIGO DE VERIFICAÇÃO',
                               ),
                               SizedBox(height: 20),
@@ -155,9 +203,7 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton(
-                                onPressed: () {
-                                  // Lógica para recuperar senha pode ser adicionada aqui
-                                },
+                                onPressed: _sendPasswordResetEmail, // Chama o método para enviar o email de redefinição de senha
                                 child: Text(
                                   'Esqueci a senha',
                                   style: TextStyle(color: Colors.grey),
@@ -171,7 +217,7 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
                                   child: Container(
                                     margin: EdgeInsets.symmetric(horizontal: 10),
                                     child: ElevatedButton(
-                                      onPressed: _login,
+                                      onPressed: isVerifying ? _verifyCode : _login,
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
@@ -180,7 +226,7 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
                                         padding: EdgeInsets.symmetric(vertical: 15),
                                       ),
                                       child: Text(
-                                        'ENTRAR',
+                                        isVerifying ? 'VERIFICAR' : 'ENTRAR',
                                         style: TextStyle(fontSize: 16, color: Colors.white),
                                       ),
                                     ),
