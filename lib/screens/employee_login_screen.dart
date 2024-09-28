@@ -21,7 +21,7 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
   String? verificationCode; // Armazenar o código de verificação enviado
 
   void _sendVerificationEmail(String email, String code) async {
-    final url = 'https://us-central1-eurofarma-training.cloudfunctions.net/sendVerificationEmail';
+    final url = 'https://us-central1-eurofarma-training.cloudfunctions.net/sendVerificationEmail'; // Substitua pelo seu projeto
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -170,15 +170,22 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            CustomTextField(
-                              controller: _emailController,
-                              hintText: 'LOGIN',
-                            ),
-                            SizedBox(height: 20),
-                            CustomTextField(
-                              controller: _passwordController,
-                              hintText: 'SENHA',
-                              obscureText: true,
+                            AbsorbPointer( // Bloqueia a interação com os campos de texto
+                              absorbing: isVerifying,
+                              child: Column(
+                                children: [
+                                  CustomTextField(
+                                    controller: _emailController,
+                                    hintText: 'LOGIN',
+                                  ),
+                                  SizedBox(height: 20),
+                                  CustomTextField(
+                                    controller: _passwordController,
+                                    hintText: 'SENHA',
+                                    obscureText: true,
+                                  ),
+                                ],
+                              ),
                             ),
                             SizedBox(height: 20),
                             if (errorMessage != null) ...[
