@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'dart:html' as html;
 import 'package:pdf/widgets.dart' as pw;
+import 'dart:html' as html;
 
 class CertificateScreen extends StatelessWidget {
   final String userId;
 
   CertificateScreen({required this.userId});
 
-  String _generateCertificateHtml(String nome, String curso, String instrutor, String formattedDate) {
-    // Substitua 'logoBase64' pelo código Base64 da sua imagem
-    String logoBase64 = 'data:image/png;base64,iVBORw0KG...'; // Insira seu código Base64 aqui
+  String _generateCertificateHtml(String nome, String curso, String instrutor) {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('dd/MM/yyyy');
+    final String formattedDate = formatter.format(now);
 
     final String template = '''
     <!DOCTYPE html>
@@ -59,12 +59,6 @@ class CertificateScreen extends StatelessWidget {
                 border-radius: 10px;
                 z-index: -1; /* Colocar atrás do conteúdo */
             }
-            .logo {
-                position: absolute;
-                top: 20px; /* Ajuste a distância do topo */
-                right: 20px; /* Ajuste a distância do lado direito */
-                width: 100px; /* Ajuste o tamanho da logo conforme necessário */
-            }
             h1 {
                 color: #005eb8; /* Cor azul da Eurofarma */
                 font-weight: 600; /* Peso da fonte para o título */
@@ -110,7 +104,6 @@ class CertificateScreen extends StatelessWidget {
     <body>
 
         <div class="certificado">
-            <img src="$logoBase64" alt="Logotipo Eurofarma" class="logo"> <!-- Logo no canto superior direito -->
             <h1>Certificado de Conclusão</h1>
             <p class="subtitulo">Certificamos que</p>
             <p class="nome">$nome</p>
@@ -131,46 +124,14 @@ class CertificateScreen extends StatelessWidget {
   }
 
   Future<void> _createPdf(BuildContext context, String nome, String curso, String instrutor) async {
-    final DateTime now = DateTime.now();
-    final DateFormat formatter = DateFormat('dd/MM/yyyy');
-    final String formattedDate = formatter.format(now);
+    final String htmlContent = _generateCertificateHtml(nome, curso, instrutor);
 
-    final String htmlContent = _generateCertificateHtml(nome, curso, instrutor, formattedDate);
-
-    // Gerar PDF usando a biblioteca pdf
-    final pdf = pw.Document();
-    pdf.addPage(
-      pw.Page(
-          build: (pw.Context context) => pw.Center(
-              child: pw.Column(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
-                  children: [
-    pw.Text('Certificado de Conclusão', style: pw.TextStyle(fontSize: 30)),
-    pw.SizedBox(height: 20),
-    pw.Text('Certificamos que', style: pw.TextStyle(fontSize: 24)),
-    pw.SizedBox(height: 20),
-    pw.Text(nome, style: pw.TextStyle(fontSize: 36, fontWeight: pw.FontWeight.bold)),
-    pw.SizedBox(height: 20),
-    pw.Text('concluiu o curso de $curso', style: pw.TextStyle(fontSize: 24)),
-    pw.SizedBox(height: 20),
-    pw.Text('Data: $formattedDate', style: pw.TextStyle(fontSize: 20)),
-    pw.SizedBox(height: 20),
-    pw.Text('Assinatura: $instrutor', style: pw.TextStyle(fontSize: 20)),
-    pw.SizedBox(height: 20),
-    pw.Text('Número de Registro: ${DateTime.now().millisecondsSinceEpoch}', style: pw.TextStyle(fontSize: 20)),
-    ],
-    ),
-    ),
-    ),
-    );
-
-    // Salvar PDF e disponibilizar para download
-    final pdfBytes = await pdf.save();
-    final blob = html.Blob([pdfBytes], 'application/pdf');
+    // Gerar PDF e disponibilizar para download
+    final blob = html.Blob([htmlContent], 'text/html');
     final url = html.Url.createObjectUrlFromBlob(blob);
     final anchor = html.AnchorElement(href: url)
-    ..setAttribute('download', 'certificado_$nome.pdf')
-    ..click();
+      ..setAttribute('download', 'certificado_$nome.html')
+      ..click();
     html.Url.revokeObjectUrl(url); // Libera o objeto URL
   }
 

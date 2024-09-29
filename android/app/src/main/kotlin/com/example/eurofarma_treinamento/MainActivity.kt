@@ -1,4 +1,4 @@
-package com.example.eurofarma_treinamento
+package com.skillsync.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -54,7 +54,7 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
     if (user != null) {
       // Gerar um código de verificação aleatório
       verificationCode = (100000 + (999999 - 100000) * (new DateTime.now().millisecondsSinceEpoch % 1000000 / 1000000)).round().toString();
-      print('Código de verificação gerado: $verificationCode'); // Imprime o código no console
+      // print('Código de verificação gerado: $verificationCode'); // Imprime o código no console
       _sendVerificationEmail(user.email!, verificationCode!); // Envia o código
 
       setState(() {
@@ -75,7 +75,7 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
       // Passa o userId para a HomeScreen ao fazer a navegação
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => TrainingScreen(userId: FirebaseAuth.instance.currentUser!.uid)),
+        MaterialPageRoute(builder: (context) => HomeScreen(userId: FirebaseAuth.instance.currentUser?.uid ?? '')),
       );
     } else {
       setState(() {

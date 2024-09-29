@@ -1,26 +1,30 @@
+import 'package:eurofarma_treinamento/screens/training_screen.dart';
 import 'package:flutter/material.dart';
+import '../data/training_data.dart';
 
 class TrainingDetailsScreen extends StatelessWidget {
   final String trainingTitle;
   final VoidCallback onComplete;
-  final String userId; // Adiciona o userId aqui
+  final String userId;
 
   TrainingDetailsScreen({
     required this.trainingTitle,
     required this.onComplete,
-    required this.userId, // Recebe o userId
+    required this.userId,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Obtém os dados do treinamento com base no título
+    final trainingDataEntry = trainingData.values.expand((modules) => modules).firstWhere((module) => module['title'] == trainingTitle);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(trainingTitle),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
             Text(
               trainingTitle,
@@ -28,16 +32,23 @@ class TrainingDetailsScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
-              'Conteúdo do treinamento...',
+              trainingDataEntry['content'] ?? 'Conteúdo não disponível',
               style: TextStyle(fontSize: 16),
             ),
-            // Adicione o conteúdo do treinamento aqui
-
+            SizedBox(height: 20),
+            Text(
+              'Conteúdo do Curso:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              trainingDataEntry['courseContent'] ?? 'Conteúdo não disponível',
+              style: TextStyle(fontSize: 16, height: 1.5),
+            ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 onComplete(); // Chama a função para marcar o módulo como concluído
-                // Agora retorna à TrainingScreen
                 Navigator.pop(context); // Volta para a TrainingScreen
               },
               child: Text('Concluir Módulo'),

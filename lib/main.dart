@@ -13,6 +13,8 @@ import 'screens/profile_registration_screen.dart';
 import 'screens/user_list_screen.dart';
 import 'screens/certificate_screen.dart'; // Importando a tela de certificado
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

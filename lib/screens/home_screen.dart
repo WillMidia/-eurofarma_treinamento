@@ -54,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                   var userData = snapshot.data!.data() as Map<String, dynamic>? ?? {};
                   String nome = userData['nome'] ?? 'Nome não disponível';
                   String cargo = userData['cargo'] ?? 'Cargo não disponível';
-                  String departamento = userData['departamento'] ?? 'Departamento não disponível';
+                  String departamento = userData['departamento'] ?? 'Eurofarma';
                   String cpf = userData['cpf'] ?? 'CPF não disponível';
 
                   return Padding(
