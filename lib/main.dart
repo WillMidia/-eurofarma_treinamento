@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importando FirebaseAuth
 import 'firebase_options.dart';
 import 'screens/user_selection_screen.dart';
 import 'screens/profile_screen.dart';
@@ -36,13 +36,13 @@ class MyApp extends StatelessWidget {
         '/': (context) => UserSelectionScreen(),
         '/employeeLogin': (context) => EmployeeLoginScreen(),
         '/rhLogin': (context) => RHLoginScreen(),
-        '/home': (context) => HomeScreen(userId: FirebaseAuth.instance.currentUser?.uid ?? ''),
+        '/home': (context) => HomeScreen(userId: FirebaseAuth.instance.currentUser?.uid ?? ''), // Passando o userId
         '/profile': (context) => ProfileScreen(),
-        '/training': (context) => TrainingScreen(userId: FirebaseAuth.instance.currentUser?.uid ?? ''),
+        '/training': (context) => TrainingScreen(userId: FirebaseAuth.instance.currentUser?.uid ?? ''), // Passando o userId
         '/registerEmployee': (context) => RegisterEmployeeScreen(),
         '/profileRegistration': (context) => ProfileRegistrationScreen(),
         '/userList': (context) => UserListScreen(),
-        '/certificate': (context) => CertificateScreen(), // Adicionando a rota para a tela de certificado
+        '/certificate': (context) => CertificateScreen(userId: '',), // Rota para a tela de certificado
       },
     );
   }

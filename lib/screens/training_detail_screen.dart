@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class TrainingDetailsScreen extends StatelessWidget {
   final String trainingTitle;
   final VoidCallback onComplete;
+  final String userId; // Adiciona o userId aqui
 
   TrainingDetailsScreen({
     required this.trainingTitle,
     required this.onComplete,
+    required this.userId, // Recebe o userId
   });
 
   @override
@@ -35,7 +37,8 @@ class TrainingDetailsScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 onComplete(); // Chama a função para marcar o módulo como concluído
-                Navigator.pop(context); // Retorna à tela anterior
+                // Agora retorna à TrainingScreen
+                Navigator.pop(context); // Volta para a TrainingScreen
               },
               child: Text('Concluir Módulo'),
             ),

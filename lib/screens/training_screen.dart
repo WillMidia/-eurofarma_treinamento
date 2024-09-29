@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/training_data.dart';
 import '../widgets/bottom_nav_screen.dart';
 import 'training_detail_screen.dart';
-import 'certificate_screen.dart'; // Importando a tela de certificado
+import 'certificate_screen.dart';
 
 class TrainingScreen extends StatefulWidget {
   final String userId;
@@ -15,8 +16,33 @@ class TrainingScreen extends StatefulWidget {
 }
 
 class _TrainingScreenState extends State<TrainingScreen> {
-  List<bool> moduleCompletionStatus = []; // Status de conclusão dos módulos
-  double progress = 0; // Progresso total
+  List<bool> moduleCompletionStatus = [];
+  double progress = 0;
+  bool trainingCompleted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProgress();
+  }
+
+  Future<void> _loadProgress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? completedModules = prefs.getStringList('${widget.userId}_completedModules') ?? [];
+    setState(() {
+      moduleCompletionStatus = List.generate(trainingData.length, (index) => completedModules.contains('module_$index'));
+      progress = moduleCompletionStatus.where((completed) => completed).length / moduleCompletionStatus.length;
+    });
+  }
+
+  Future<void> _saveProgress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> completedModules = moduleCompletionStatus.asMap().entries
+        .where((entry) => entry.value)
+        .map((entry) => 'module_${entry.key}')
+        .toList();
+    await prefs.setStringList('${widget.userId}_completedModules', completedModules);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +62,10 @@ class _TrainingScreenState extends State<TrainingScreen> {
           String cargo = userData['cargo'] ?? 'Farmacêutico';
           final modules = trainingData[cargo] ?? [];
 
-          // Inicializar o status de conclusão com base no número de módulos
           if (moduleCompletionStatus.length != modules.length) {
             moduleCompletionStatus = List.generate(modules.length, (index) => false);
           }
 
-          // Calcular progresso
           progress = moduleCompletionStatus.where((completed) => completed).length / modules.length;
 
           return Stack(
@@ -66,22 +90,13 @@ class _TrainingScreenState extends State<TrainingScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Bem-vindo à Área de Treinamentos',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
+                    Text('Bem-vindo à Área de Treinamentos', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                     SizedBox(height: 20),
-                    LinearProgressIndicator(value: progress), // Barra de progresso
+                    LinearProgressIndicator(value: progress),
                     SizedBox(height: 10),
-                    Text(
-                      '${(progress * 100).toStringAsFixed(0)}% Concluído', // Porcentagem da barra
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    Text('${(progress * 100).toStringAsFixed(0)}% Concluído', style: TextStyle(fontSize: 16)),
                     SizedBox(height: 10),
-                    Text(
-                      'Progresso do treinamento',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
+                    Text('Progresso do treinamento', style: TextStyle(fontSize: 14, color: Colors.grey)),
                     SizedBox(height: 20),
                     Expanded(
                       child: ListView.builder(
@@ -99,24 +114,44 @@ class _TrainingScreenState extends State<TrainingScreen> {
                                     trainingTitle: modules[index]['title'] ?? '',
                                     onComplete: () {
                                       setState(() {
-                                        moduleCompletionStatus[index] = true; // Marcar como concluído
+                                        moduleCompletionStatus[index] = true;
+                                        _saveProgress(); // Salva o progresso
                                         if (moduleCompletionStatus.every((completed) => completed)) {
-                                          // Se todos os módulos foram concluídos, mostre a mensagem
+                                          trainingCompleted = true;
                                           showCompletionDialog(context);
                                         }
                                       });
                                     },
+                                    userId: widget.userId,
                                   ),
                                 ),
-                              ).then((_) {
-                                // Retorna à lista de módulos após completar o último módulo
-                                setState(() {});
-                              });
+                              );
                             },
                           );
                         },
                       ),
                     ),
+                    if (trainingCompleted)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Column(
+                          children: [
+                            Text('PARABÉNS! Você concluiu todos os módulos do treinamento.',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
+                                textAlign: TextAlign.center),
+                            SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CertificateScreen(userId: widget.userId)),
+                                );
+                              },
+                              child: Text('Abrir Certificado'),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -137,10 +172,10 @@ class _TrainingScreenState extends State<TrainingScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fechar o diálogo
+                Navigator.of(context).pop();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CertificateScreen()), // Navegar para a tela de certificado
+                  MaterialPageRoute(builder: (context) => CertificateScreen(userId: widget.userId)),
                 );
               },
               child: Text('Abrir Certificado'),
@@ -155,7 +190,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
 class TrainingCard extends StatelessWidget {
   final String title;
   final String description;
-  final bool isCompleted; // Status de conclusão
+  final bool isCompleted;
   final VoidCallback onTap;
 
   TrainingCard({
@@ -171,28 +206,18 @@ class TrainingCard extends StatelessWidget {
       elevation: 5,
       margin: EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
-        leading: Icon(
-          Icons.school,
-          size: 40,
-          color: Colors.blueAccent,
-        ),
+        leading: Icon(Icons.school, size: 40, color: Colors.blueAccent),
         contentPadding: EdgeInsets.all(16),
         title: Row(
           children: [
             Expanded(
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              child: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
-            if (isCompleted) // Adiciona o "V" se o módulo estiver concluído
+            if (isCompleted)
               Icon(Icons.check, color: Colors.green),
           ],
         ),
-        subtitle: Text(
-          description,
-          style: TextStyle(fontSize: 14),
-        ),
+        subtitle: Text(description, style: TextStyle(fontSize: 14)),
         onTap: onTap,
       ),
     );
