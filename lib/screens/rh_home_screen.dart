@@ -1,5 +1,7 @@
-import 'package:eurofarma_treinamento/screens/register_employee_screen.dart';
 import 'package:flutter/material.dart';
+import 'register_employee_screen.dart';
+import 'add_training_module_screen.dart';
+import 'user_list_screen.dart';
 
 class RHHomeScreen extends StatefulWidget {
   @override
@@ -10,8 +12,10 @@ class _RHHomeScreenState extends State<RHHomeScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _widgetOptions = <Widget>[
-    DashboardScreen(), // Atualizado para usar o novo DashboardScreen
-    RegisterEmployeeScreen(), // Adicionei o widget para a tela de cadastro de colaboradores
+    DashboardScreen(), // Tela inicial do RH (Dashboard)
+    RegisterEmployeeScreen(), // Tela de cadastro de colaboradores
+    AddTrainingModuleScreen(), // Tela de treinamento (Cadastro de Treinamentos/Módulos)
+    UserListScreen(), // Tela de listagem de colaboradores
   ];
 
   void _onItemTapped(int index) {
@@ -45,22 +49,22 @@ class _RHHomeScreenState extends State<RHHomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'William Tedros',
+                        'William Tedros', // Exemplo de nome
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Gerente de Farmácia',
+                        'Gerente de Farmácia', // Exemplo de cargo
                         style: TextStyle(fontSize: 18, color: Colors.white70),
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Departamento: Farmacologia',
+                        'Departamento: Farmacologia', // Exemplo de departamento
                         style: TextStyle(fontSize: 18, color: Colors.white70),
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'CPF: 123.456.789-00',
+                        'CPF: 123.456.789-00', // Exemplo de CPF
                         style: TextStyle(fontSize: 18, color: Colors.white70),
                       ),
                     ],
@@ -86,9 +90,18 @@ class _RHHomeScreenState extends State<RHHomeScreen> {
             icon: Icon(Icons.person_add),
             label: 'Cadastrar Colaborador',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Cadastrar Treinamento',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Listar Colaboradores',
+          ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.blue, // Cor do item selecionado
+        unselectedItemColor: Colors.grey, // Define a cor dos itens não selecionados
         onTap: _onItemTapped,
       ),
     );
@@ -104,7 +117,6 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Adicione um ícone legal para representar o dashboard
             Center(
               child: Icon(
                 Icons.pie_chart,
@@ -113,8 +125,6 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-
-            // Cartões informativos
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -123,8 +133,6 @@ class DashboardScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 20),
-
-            // Lista de notificações
             Text(
               'Notificações Recentes',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),

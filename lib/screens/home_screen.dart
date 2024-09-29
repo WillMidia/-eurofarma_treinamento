@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
-import '../widgets/bottom_nav_screen.dart'; // Certifique-se de importar o novo widget
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../widgets/bottom_nav_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  final String userId;
+
+  HomeScreen({required this.userId});
+
   @override
   Widget build(BuildContext context) {
     return BottomNavScreen(
       child: Stack(
-        fit: StackFit.expand, // Expande o Stack para ocupar toda a área disponível
+        fit: StackFit.expand,
         children: [
-          // Imagem de fundo
           Align(
             alignment: Alignment.center,
             child: Opacity(
-              opacity: 0.1, // Ajusta a transparência
+              opacity: 0.1,
               child: Container(
-                width: 300, // Define a largura da imagem
-                height: 300, // Define a altura da imagem
+                width: 300,
+                height: 300,
                 child: Image.asset(
-                  'assets/images/eurofarma-back.png', // Substitua pelo nome correto da imagem
-                  fit: BoxFit.cover, // Ajusta a imagem para cobrir o container
+                  'assets/images/eurofarma-back.png',
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -26,8 +30,7 @@ class HomeScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Logo da Eurofarma
-              SizedBox(height: 25), // Ajuste a altura para mover a logo mais para baixo
+              SizedBox(height: 25),
               Align(
                 alignment: Alignment.topCenter,
                 child: Image.asset(
@@ -37,54 +40,58 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              // Informações do usuário
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'William Tedros',
-                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance.collection('users').doc(userId).snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return Center(child: Text('Usuário não encontrado.'));
+                  }
+
+                  var userData = snapshot.data!.data() as Map<String, dynamic>? ?? {};
+                  String nome = userData['nome'] ?? 'Nome não disponível';
+                  String cargo = userData['cargo'] ?? 'Cargo não disponível';
+                  String departamento = userData['departamento'] ?? 'Departamento não disponível';
+                  String cpf = userData['cpf'] ?? 'CPF não disponível';
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(nome, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                              SizedBox(height: 8),
+                              Text(cargo, style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+                              SizedBox(height: 4),
+                              Text(departamento, style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+                              SizedBox(height: 4),
+                              Text(cpf, style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+                            ],
                           ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Gerente de Farmácia',
-                            style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Departamento: Farmacologia',
-                            style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'CPF: 123.456.789-00',
-                            style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-                          ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(width: 16),
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundImage: AssetImage('assets/images/profile_picture.png'),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 16),
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage('assets/images/profile_picture.png'),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
               SizedBox(height: 30),
-              // Espaço flexível para centralizar o balão de fala com o ícone Android
               Expanded(
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Balão de fala
                       Container(
                         padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -104,7 +111,6 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 20),
-                      // Ícone Android
                       Container(
                         padding: EdgeInsets.all(12),
                         decoration: BoxDecoration(
