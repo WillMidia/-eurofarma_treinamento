@@ -11,9 +11,13 @@ class UserListScreen extends StatelessWidget {
     'Técnico de Laboratório': ['Operação de Equipamentos', 'Segurança Laboratorial'],
   };
 
+  // Função para gerar um progresso mockado entre 0 e 100%
+  double _generateMockProgress() {
+    return (20 + (80 * (new DateTime.now().millisecondsSinceEpoch % 1000) / 1000));
+  }
+
   // Função para excluir colaborador com confirmação
   void _deleteUser(BuildContext context, String userId) async {
-    // Mostra um diálogo de confirmação
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -24,20 +28,18 @@ class UserListScreen extends StatelessWidget {
             TextButton(
               child: Text('Cancelar'),
               onPressed: () {
-                Navigator.of(context).pop(); // Fecha o diálogo
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: Text('Excluir'),
               onPressed: () async {
                 try {
-                  // Excluir o colaborador do Firestore
                   await _firestore.collection('users').doc(userId).delete();
-
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Colaborador excluído com sucesso!')),
                   );
-                  Navigator.of(context).pop(); // Fecha o diálogo
+                  Navigator.of(context).pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Erro ao excluir colaborador: $e')),
@@ -90,7 +92,7 @@ class UserListScreen extends StatelessWidget {
                       onChanged: (value) {
                         setState(() {
                           selectedCargo = value;
-                          selectedTraining = null; // Limpar o treinamento ao trocar o cargo
+                          selectedTraining = null;
                         });
                       },
                       items: cargos.map((cargo) {
@@ -124,7 +126,6 @@ class UserListScreen extends StatelessWidget {
                 TextButton(
                   onPressed: () async {
                     try {
-                      // Atualizar os dados no Firestore
                       await _firestore.collection('users').doc(userId).update({
                         'nome': nameController.text,
                         'email': emailController.text,
@@ -183,26 +184,49 @@ class UserListScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               var userData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
               var userId = snapshot.data!.docs[index].id;
+              double mockProgress = _generateMockProgress(); // Gera progresso mockado
 
-              return ListTile(
-                title: Text(userData['nome'] ?? 'Nome não disponível'),
-                subtitle: Text(userData['cargo'] ?? 'Cargo não disponível'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {
-                        _editUser(context, userId, userData);
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        _deleteUser(context, userId);
-                      },
-                    ),
-                  ],
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: Text(userData['nome'] ?? 'Nome não disponível'),
+                        subtitle: Text(userData['cargo'] ?? 'Cargo não disponível'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () {
+                                _editUser(context, userId, userData);
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () {
+                                _deleteUser(context, userId);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Progresso no treinamento: ${(mockProgress).toStringAsFixed(0)}% em ${userData['training'] ?? 'Treinamento não disponível'}',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 5),
+                      LinearProgressIndicator(
+                        value: mockProgress / 100,
+                        backgroundColor: Colors.grey[300],
+                        color: Colors.blueAccent,
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

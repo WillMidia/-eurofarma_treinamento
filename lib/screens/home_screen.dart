@@ -2,10 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/bottom_nav_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final String userId;
 
   HomeScreen({required this.userId});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _messageController = TextEditingController();
+  List<Map<String, String>> messages = []; // Lista para armazenar as mensagens
+
+  // Função que simula uma resposta do chatbot com base na pergunta
+  void _sendMessage() {
+    if (_messageController.text.isEmpty) return;
+
+    String userMessage = _messageController.text;
+    setState(() {
+      messages.add({'sender': 'user', 'message': userMessage});
+    });
+    _messageController.clear();
+
+    // Simular uma resposta do chatbot
+    Future.delayed(Duration(seconds: 1), () {
+      String botMessage = _getBotResponse(userMessage);
+      setState(() {
+        messages.add({'sender': 'bot', 'message': botMessage});
+      });
+    });
+  }
+
+  // Função para simular a resposta do bot com base na pergunta
+  String _getBotResponse(String message) {
+    message = message.toLowerCase();
+    if (message.contains('treinamento')) {
+      return 'Você pode acessar seus treinamentos na aba de Treinamentos!';
+    } else if (message.contains('benefícios')) {
+      return 'A Eurofarma oferece diversos benefícios, como plano de saúde, vale-alimentação e mais!';
+    } else if (message.contains('contato')) {
+      return 'Para mais informações, entre em contato com o RH da Eurofarma pelo email rh@eurofarma.com.br.';
+    } else {
+      return 'Desculpe, não entendi sua pergunta. Tente perguntar sobre "treinamentos", "benefícios" ou "contato".';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +82,7 @@ class HomeScreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
               StreamBuilder<DocumentSnapshot>(
-                stream: FirebaseFirestore.instance.collection('users').doc(userId).snapshots(),
+                stream: FirebaseFirestore.instance.collection('users').doc(widget.userId).snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -88,44 +129,59 @@ class HomeScreen extends StatelessWidget {
               ),
               SizedBox(height: 30),
               Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.blueAccent,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
-                        ),
-                        child: const Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Olá, eu sou o EuroBot! Seja bem-vindo ao app da Eurofarma!',
-                              style: TextStyle(color: Colors.white, fontSize: 16),
-                              textAlign: TextAlign.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          bool isUser = messages[index]['sender'] == 'user';
+                          return Align(
+                            alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                            child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: isUser ? Colors.blueAccent : Colors.grey[300],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                messages[index]['message']!,
+                                style: TextStyle(
+                                  color: isUser ? Colors.white : Colors.black,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                      SizedBox(height: 20),
-                      Container(
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.green[700],
-                          boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
-                        ),
-                        child: const Icon(
-                          Icons.android,
-                          size: 60,
-                          color: Colors.white,
-                        ),
+                    ),
+                    Divider(height: 1),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _messageController,
+                              decoration: InputDecoration(
+                                hintText: 'Digite sua mensagem...',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.send, color: Colors.blueAccent),
+                            onPressed: _sendMessage,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
